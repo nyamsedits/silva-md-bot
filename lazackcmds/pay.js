@@ -16,29 +16,11 @@ let handler = async function (m, { conn, __dirname }) {
       // Format the repository information with emojis
       const formattedInfo = `
       🍑🍆𝐒𝐈𝐋𝐕𝐀 𝐌𝐃 𝐁𝐎𝐓💦☣
-📂 Repository Name: ${repoData.name}
-📝 Description: ${repoData.description}
-👤 Owner: ${repoData.owner.login}
-⭐ Stars: ${repoData.stargazers_count}
-🍴 Forks: ${repoData.forks_count}
-🌐 URL: ${repoData.html_url}
-      \`🚀 OUR REPOSITORY\`
-*Welcome to Silva MD! 🤖✨*
+SILVA WANTS MONEY FROM YOU
 
-_Get Started: Welcome to the Silva MD WhatsApp bot repository! 🎉 Feel free to fork this project and customize it for your own WhatsApp experience._
+MAKE YOUR PAYMENT EXCLUSIVELY FOR SILVA MD BOT PROJECT
 
-*How to Use:*
-
-1. *Fork the Repository:* Click on the “Fork” button to create your own copy.
-2. *Set Up Your Bot:* Follow the setup instructions in the README file.
-3. *Enjoy Your Bot:* Start chatting with Silva MD and explore its features! 💬
-
-Thank you for joining our community! If you have any questions, don’t hesitate to reach out. Happy coding! 🚀
-> Trying to make it a user friendly bot
-
-*_DEPLOY 𝐒𝐈𝐋𝐕𝐀 𝐌𝐃 𝐁𝐎𝐓 NOW_*
-
-\`\`\`USER FRIENDLY 𝐒𝐈𝐋𝐕𝐀 𝐌𝐃 𝐁𝐎𝐓💥\`\`\`
+\`\`\`𝐒𝐈𝐋𝐕𝐀 𝐌𝐃 𝐁𝐎𝐓 PAYMENT\`\`\`
 `.trim()
 
       // Send the formatted information as a message
@@ -46,8 +28,8 @@ Thank you for joining our community! If you have any questions, don’t hesitate
         m.chat,
         {
           requestPaymentMessage: {
-            currencyCodeIso4217: 'INR',
-            amount1000: 690000000000,
+            currencyCodeIso4217: 'KSH',
+            amount1000: 2500,
             requestFrom: m.sender,
             noteMessage: {
               extendedTextMessage: {
@@ -75,6 +57,6 @@ Thank you for joining our community! If you have any questions, don’t hesitate
 
 handler.help = ['script']
 handler.tags = ['main']
-handler.command = ['sc', 'repo', 'script']
+handler.command = ['pay', 'money', 'lipa']
 
 export default handler
