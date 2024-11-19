@@ -1,28 +1,59 @@
-import { youtubedl, youtubedlv2 } from '@bochilteam/scraper'
+//[ DL YTMP3 🐢 ]
+//[ Package :"ruhend-scraper": "^*", ]
 
-let handler = async (m, { conn, text, args, isPrems, isOwner, usedPrefix, command }) => {
-  if (!args || !args[0]) throw `✳️ Example :\n${usedPrefix + command} https://youtu.be/YzkTFFwxtXI`
-  if (!args[0].match(/youtu/gi)) throw `❎ Verify that it is a YouTube link.`
 
-  m.react(rwait)
+import { ytmp3, ytmp3v3 } from 'ruhend-scraper'
 
-  try {
-    let q = '128kbps'
-    let v = args[0]
-    const yt = await youtubedl(v).catch(async () => await youtubedlv2(v))
-    const dl_url = await yt.audio[q].download()
-    const title = await yt.title
+let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+if (!args || !args[0]) return conn.reply(m.chat, 'Ingresa un enlace de Youtube', m)
 
-    conn.sendFile(m.chat, dl_url, title + '.mp3', null, m, false, { mimetype: 'audio/mpeg' })
+try{
+await m.react('🕑')
+let data = await ytmp3(args[0])
+let { audio, title } = data
+conn.sendFile(m.chat, audio, title + '.mp3', ${title}.trim(), m, false, { mimetype: 'audio/mpeg', asDocument: false })
+await m.react('✅')
+} catch {
+try {
+await m.react('🕑')
+let data = await ytmp3v3(args[0])
+let { audio, title } = data
+conn.sendFile(m.chat, audio, title + '.mp3', ${title}.trim(), m, false, { mimetype: 'audio/mpeg', asDocument: false })
+await m.react('✅')
+} catch {
+await m.react('❌')
+}}}
 
-    m.react(xmoji)
-  } catch {
-    await m.reply(`❎ Error: Could not download the audio.`)
-  }
-}
+handler.help = ['ytmp3 <link>']
+handler.tags = ['dl']
+handler.command = ['ytmp3', 'yta', 'ytaudio']
+export default handler
 
-handler.help = ['ytmp3 <url>']
-handler.tags = ['downloader']
-handler.command = ['ytmp3', 'yta']
+//[ DL YTMP3DOC 🐢 ]
 
+import { ytmp3, ytmp3v3 } from 'ruhend-scraper'
+
+let handler = async (m, { conn, args, text, usedPrefix, command }) => {
+if (!args || !args[0]) return conn.reply(m.chat, 'Ingresa un enlace de Youtube', m)
+
+try{
+await m.react('🕑')
+let data = await ytmp3(args[0])
+let { audio, title } = data
+conn.sendFile(m.chat, audio, title + '.mp3', ${title}.trim(), m, false, { mimetype: 'audio/mpeg', asDocument: true })
+await m.react('✅')
+} catch {
+try {
+await m.react('🕑')
+let data = await ytmp3v3(args[0])
+let { audio, title } = data
+conn.sendFile(m.chat, audio, title + '.mp3', ${title}.trim(), m, false, { mimetype: 'audio/mpeg', asDocument: true })
+await m.react('✅')
+} catch {
+await m.react('❌')
+}}}
+
+handler.help = ['ytmp3doc <link>']
+handler.tags = ['dl']
+handler.command = ['ytmp3', 'yta', 'ytaudiodoc']
 export default handler

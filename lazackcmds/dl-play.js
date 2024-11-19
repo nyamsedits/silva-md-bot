@@ -41,7 +41,9 @@ YOUR PREMIUM USER BOT`;
       [
         ["🎵 AUDIO", `${usedPrefix}song ${text}`],
         ["📼 VIDEO", `${usedPrefix}video ${text}`],
-        ["💗 SCRIPT", `${usedPrefix}repo`]
+        ["💗 SCRIPT", `${usedPrefix}repo`],
+        ["💕 MENU", `${usedPrefix}menu`],
+        ["🍆 SPEED", `${usedPrefix}ping`]
       ],
       null,
       message

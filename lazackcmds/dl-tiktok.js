@@ -1,42 +1,79 @@
-import { tiktokdl } from '@bochilteam/scraper'
-import fg from 'api-dylux'
+import fetch from 'node-fetch'; // Ensure node-fetch is installed
 
-let handler = async (m, { conn, text, args, usedPrefix, command }) => {
-  if (!args[0] && m.quoted && m.quoted.text) {
-    args[0] = m.quoted.text
+const handler = async (m, { conn, args }) => {
+  const url = args[0]; // Extract URL from user input
+  
+  // Validate the TikTok URL
+  const validTikTokPrefixes = [
+    "https://vt.tiktok.com/",
+    "https://www.tiktok.com/",
+    "https://t.tiktok.com/",
+    "https://vm.tiktok.com/"
+  ];
+  
+  if (!validTikTokPrefixes.some((prefix) => url.startsWith(prefix))) {
+    await conn.reply(m.chat, "❌ Please provide a valid TikTok URL.", m);
+    return;
   }
-  if (!args[0] && !m.quoted) throw `Give the link of the video Tiktok or quote a tiktok link`
-  if (!args[0].match(/tiktok/gi)) throw `Verify that the link is from TikTok`
 
-  let txt = 'Here your Requested video'
+  // Notify user that the download is in progress
+  await conn.reply(m.chat, "⏳ *Fetching the TikTok video... Please wait.*", m);
 
+  // Attempt to fetch video data using the first API
   try {
-    const {
-      author: { nickname },
-      video,
-      description,
-    } = await tiktokdl(args[0])
-    const url =
-      video.no_watermark2 ||
-      video.no_watermark ||
-      'https://tikcdn.net' + video.no_watermark_raw ||
-      video.no_watermark_hd
+    const api1Response = await fetch(`https://api.tiklydown.eu.org/api/download?url=${encodeURIComponent(url)}`);
+    const api1Data = await api1Response.json();
 
-    if (!url) throw global.error
+    if (api1Data.video?.noWatermark) {
+      await sendTikTokVideo(conn, m, api1Data.video.noWatermark, api1Data);
+    } else {
+      throw new Error("API 1 failed to fetch video.");
+    }
+  } catch (error) {
+    console.log("Error with API 1:", error.message);
 
-    conn.sendFile(m.chat, url, 'silva.mp4', '', m)
-  } catch (err) {
+    // Fallback to a second API if the first fails
     try {
-      let p = await fg.tiktok(args[0])
-      conn.sendFile(m.chat, p.play, 'silva.mp4', txt, m)
-    } catch {
-      m.reply('*An unexpected error occurred*')
+      const api2Response = await fetch(`https://widipe.com/download/tikdl?url=${encodeURIComponent(url)}`);
+      const api2Data = await api2Response.json();
+
+      if (api2Data.result?.video) {
+        await sendTikTokVideo(conn, m, api2Data.result.video, api2Data);
+      } else {
+        throw new Error("API 2 failed to fetch video.");
+      }
+    } catch (error) {
+      console.log("Error with API 2:", error.message);
+      await conn.reply(m.chat, "❌ Sorry, we couldn't fetch the TikTok video. Please try again later.", m);
     }
   }
-}
+};
 
-handler.help = ['tiktok'].map(v => v + ' <url>')
-handler.tags = ['downloader']
-handler.command = /^t(t|iktok(d(own(load(er)?)?|l))?|td(own(load(er)?)?|l))$/i
+// Helper function to send the TikTok video
+const sendTikTokVideo = async (conn, m, videoUrl, data) => {
+  const caption = `
+*🎥 TIKTOK DOWNLOADER 🎥*
 
-export default handler
+*Video by*: _${data.author?.name || "Unknown"}_ ([@${data.author?.unique_id || "N/A"}])
+*Likes*: ${data.stats?.likeCount || 0}
+*Comments*: ${data.stats?.commentCount || 0}
+*Shares*: ${data.stats?.shareCount || 0}
+*Plays*: ${data.stats?.playCount || 0}
+*Saves*: ${data.stats?.saveCount || 0}
+
+⏤͟͟͞͞ _Powered by Silva MD Bot_
+  `.trim();
+
+  await conn.sendMessage(m.chat, {
+    caption,
+    video: { url: videoUrl }
+  }, { quoted: m });
+};
+
+handler.help = ["tiktok", "tikdown"];
+handler.tags = ["downloader"];
+handler.command = ["tiktok", "tikdown"]; // Commands to trigger the handler
+handler.owner = false; // Can be used by anyone
+handler.private = false; // Works in both private and group chats
+
+export default handler;
